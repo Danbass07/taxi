@@ -1,5 +1,6 @@
 <script>
-  import DatePicker from "../UIComponents/DatePicker.svelte";
+  import Calendar from "../UIComponents/Calendar.svelte";
+  import TimePicker from "../UIComponents/TimePicker.svelte";
   import { DateTime, Interval, Duration } from "luxon";
 
   let timeline = {
@@ -34,30 +35,55 @@
       ],
     ],
   };
+  let selectedDay;
+  let action = "Selecting Day";
+  function actionController(event) {
+    if (event.target.name === "Selecting Day") {
+      action = "Selecting Time";
+    } else {
+      action = "Selecting Day";
+    }
+  }
 
   function dayPickerController(event) {
-    let newDay = [{ ...event.detail.toObject() }, [null, null, null]];
-    let addDay = true;
-    timeline.workDays.map((workDay, index) => {
-      if (
-        workDay[0].year === newDay[0].year &&
-        workDay[0].month === newDay[0].month &&
-        workDay[0].day === newDay[0].day
-      ) {
-        addDay = false;
-        timeline.workDays.splice(index, 1);
-        timeline.workDays = [...timeline.workDays];
-        //timeline.workDays = timeline.workDays;
+    if (action === "Selecting Day") {
+      let newDay = [{ ...event.detail.toObject() }, [null, null, null]];
+      let addDay = true;
+      timeline.workDays.map((workDay, index) => {
+        if (
+          workDay[0].year === newDay[0].year &&
+          workDay[0].month === newDay[0].month &&
+          workDay[0].day === newDay[0].day
+        ) {
+          addDay = false;
+          timeline.workDays.splice(index, 1);
+          timeline.workDays = [...timeline.workDays];
+        }
+      });
+      if (addDay) {
+        timeline.workDays = [...timeline.workDays, newDay];
       }
-    });
-    if (addDay) {
-      timeline.workDays = [...timeline.workDays, newDay];
+      console.log(timeline);
+      // console.log(timeline);
+    } else {
+      console.log(event.detail);
+    }
+  }
+  function timePickerController(event) {
+    if (action === "Selecting Time") {
+      console.log(event.detail);
     }
   }
 </script>
 
 <main>
-  <DatePicker on:pick-a-day={dayPickerController} {timeline} />
+  <button on:click={actionController} name={action}>{action}</button>
+  <Calendar
+    on:pick-a-day={dayPickerController}
+    on:pick-a-time={timePickerController}
+    {timeline}
+    {action}
+  />
 </main>
 
 <style>

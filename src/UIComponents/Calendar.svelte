@@ -2,8 +2,10 @@
   import { DateTime, Interval, Duration } from "luxon";
   import Button from "@smui/button";
   import DayPicker from "./DayPicker.svelte";
+  import TimePicker from "./TimePicker.svelte";
 
   export let timeline;
+  export let action;
 
   let monthModificator = 0;
   let now = DateTime.local().plus({ month: monthModificator });
@@ -14,16 +16,25 @@
     lastDayOfLasttWeek
   );
   let monthMatrix = [];
-  let matrix = [];
-
+  let dayMatrix = [];
   for (let v = 0; v < monthToDisplay.length("day"); v++) {
-    matrix = [...matrix, firstDayOfFirstWeek.plus({ day: v })];
+    monthMatrix = [...monthMatrix, firstDayOfFirstWeek.plus({ day: v })];
+  }
+  $: for (let v = 0; v < 24; v = v + 1) {
+    for (let i = 0; i < 60; i = i + 15) {
+      dayMatrix = [
+        ...dayMatrix,
+        {
+          hour: v,
+          minute: i,
+          working: false,
+        },
+      ];
+    }
   }
 
-  monthMatrix = matrix;
-
   function monthModificatorController(value) {
-    monthModificator += value;
+    monthModificator = monthModificator + value;
     now = DateTime.local().plus({ month: monthModificator });
 
     firstDayOfFirstWeek = now.startOf("month").startOf("week");
@@ -33,13 +44,10 @@
       lastDayOfLasttWeek
     );
     monthMatrix = [];
-    matrix = [];
 
     for (let v = 0; v < monthToDisplay.length("day"); v++) {
-      matrix.push(firstDayOfFirstWeek.plus({ day: v }));
+      monthMatrix = [...monthMatrix, firstDayOfFirstWeek.plus({ day: v })];
     }
-
-    monthMatrix = matrix;
   }
 </script>
 
@@ -58,8 +66,13 @@
     <div class="weekday">Saturday</div>
     <div class="weekday">Sunday</div>
     {#each monthMatrix as day, i (day.ts)}
-      <DayPicker on:pick-a-day {day} {timeline} />
+      <DayPicker on:pick-a-day {day} {timeline} {action} />
     {/each}
+    <div class="timeMatrix">
+      {#each dayMatrix as day}
+        <TimePicker on:pick-a-time {day} {timeline} {action} />
+      {/each}
+    </div>
   </div>
 </main>
 
@@ -84,6 +97,10 @@
     padding: 1em;
     max-width: 90%;
     margin: 0 auto;
+  }
+  .timeMatrix {
+    margin: auto auto;
+    width: 400px;
   }
 
   @media (min-width: 640px) {
