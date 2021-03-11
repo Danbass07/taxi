@@ -35,8 +35,9 @@
       ],
     ],
   };
-  let selectedDay;
+
   let action = "Selecting Day";
+
   function actionController(event) {
     if (event.target.name === "Selecting Day") {
       action = "Selecting Time";
@@ -48,30 +49,25 @@
   function dayPickerController(event) {
     if (action === "Selecting Day") {
       let newDay = [{ ...event.detail.toObject() }, [null, null, null]];
-      let addDay = true;
-      timeline.workDays.map((workDay, index) => {
-        if (
-          workDay[0].year === newDay[0].year &&
-          workDay[0].month === newDay[0].month &&
-          workDay[0].day === newDay[0].day
-        ) {
-          addDay = false;
-          timeline.workDays.splice(index, 1);
-          timeline.workDays = [...timeline.workDays];
-        }
-      });
-      if (addDay) {
+
+      let data = timeline.workDays.filter(
+        (workDay) => JSON.stringify(workDay[0]) === JSON.stringify(newDay[0])
+      );
+
+      if (data.length === 0) {
         timeline.workDays = [...timeline.workDays, newDay];
+      } else {
+        timeline.workDays = [
+          ...timeline.workDays.filter(
+            (workDay) =>
+              JSON.stringify(workDay[0]) !== JSON.stringify(newDay[0])
+          ),
+        ];
       }
-      console.log(timeline);
-      // console.log(timeline);
-    } else {
-      console.log(event.detail);
     }
   }
   function timePickerController(event) {
     if (action === "Selecting Time") {
-      console.log(event.detail);
     }
   }
 </script>

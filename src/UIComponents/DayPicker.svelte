@@ -13,7 +13,7 @@
     disableButton = true;
   }
   const dispatch = createEventDispatcher();
-  $: console.log(timeline);
+
   $: timeline.workDays.forEach((date) => {
     if (
       date[0].month === day.toObject().month &&
@@ -22,13 +22,14 @@
       buttonClass = "activeDay";
     }
   });
+
   function dayPicker(day) {
     dispatch("pick-a-day", day);
   }
 </script>
 
 <button
-  class={buttonClass}
+  class={buttonClass + " " + "weekday"}
   variant="outlined"
   disabled={disableButton}
   on:click={() => dayPicker(day)}
