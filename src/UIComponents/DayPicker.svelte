@@ -6,6 +6,7 @@
   export let day;
   export let timeline;
   export let action;
+  let active = true;
   let buttonClass = "notActiveDay";
   let disableButton = false;
 
@@ -14,15 +15,17 @@
   }
   const dispatch = createEventDispatcher();
 
-  $: timeline.workDays.forEach((date) => {
-    if (
+  $: active = timeline.workDays.filter(
+    (date) =>
       date[0].month === day.toObject().month &&
       date[0].day === day.toObject().day
-    ) {
-      buttonClass = "activeDay";
-    }
-  });
+  );
 
+  $: if (active.length !== 0) {
+    buttonClass = "activeDay";
+  } else {
+    buttonClass = "notActiveDay";
+  }
   function dayPicker(day) {
     dispatch("pick-a-day", day);
   }
